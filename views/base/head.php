@@ -19,7 +19,11 @@
 <body class="bg-gray-700 text-white">
 
 <div class="d-flex">
-        <?php require_once '../../Controllers/AbstractController.php'; ?>
+        <?php
+            require_once '../../Controllers/AbstractController.php';
+            $AC = new AbstractController();
+            $AC->redirectIfSessionExists();
+        ?>
         <?php require_once 'sidebar.php'; ?>
 
       <div class="w-100">

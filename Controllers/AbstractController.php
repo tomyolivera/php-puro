@@ -1,5 +1,7 @@
 <?php
 
+session_start();
+
 class AbstractController{
     // *Properties*
     public array $colors;
@@ -16,6 +18,7 @@ class AbstractController{
     public const MAX_PASSWORD = 120;
 
     // Form
+    protected const EMPTY_FIELDS = "Please, complete the fields!";
     protected const PASSWORDS_NOT_MATCH = "The passwords do not match!";
 
     // *Methods*
@@ -26,6 +29,20 @@ class AbstractController{
             "login" => "green",
             "register" => "blue",
         ];
+    }
+
+    public function getActualSite()
+    {
+        $server = $_SERVER['PHP_SELF'];
+        $server = str_replace("/files/php/facer/", "", $server);
+
+        if( (strpos($server, "views") != true) || (strpos($server, "Views") != true)){
+            $server = str_replace("Views/", "", $server);
+            $server = str_replace("views/", "", $server);
+            $server = str_replace("/index", "", $server);
+        }
+
+        return str_replace(".php", "", $server);
     }
 
     /**
@@ -49,12 +66,60 @@ class AbstractController{
     }
 
     /**
-     * @param string $value
-     * @return array
+     * @param null
+     * @return void
      */
-    public function getUser(string $value): array
+    public function redirectIfSessionExists(): void
     {
-        return $_SESSION['user']["$value"];
+        if($this->checkSession()){
+            $site = $this->getActualSite();
+            if($site == "login" || $site == "register"){
+                session_start();
+                $this->redirectToRoute("../../home");
+            }
+        }
+    }
+
+    /**
+     * @param string $value
+     */
+    public function getUser(string $value)
+    {
+        return $_SESSION['user'][0][$value];
+    }
+
+    /**
+     * @param null
+     * @return string
+     */
+    public function showStatus(): string
+    {
+        switch ($this->getUser("status")) {
+            case 0:
+                $status = "<p class='flex align-center my-2'><i class='text-gray-500'>fiber_manual_record</i>Offline</p>";
+                break;
+                
+            case 1:
+                $status = "<p class='flex align-center my-2'><i class='text-green-500'>fiber_manual_record</i>Online</p>";
+                break;
+            default:
+                $status = "<p class='flex align-center my-2'><i class='text-orange-500'>fiber_manual_record</i>Busy</p>";
+                break;
+        }
+        return $status;
+    }
+
+    /**
+     * @param null
+     * @return string
+     */
+    public function showUserPhoto(): string
+    {
+        if($this->getUser("photo") == ""){
+            return '<img class="rounded-full w-16 h-16" src=".././../Public/img/users/nopicture.png">';
+        }else{
+            return '<img class="rounded-full w-16 h-16" src=".././../Public/img/users/nopicture.png">';
+        }
     }
 
     /**
@@ -132,7 +197,7 @@ class AbstractController{
      */
     protected function usernameAlreadyExists(string $username): bool
     {
-        $query = $this->doSql("SELECT username FROM users WHERE username = :username LIMIT 1");
+        $query = $this->doSql("SELECT id FROM users WHERE username = :username LIMIT 1");
         $query->execute([':username' => $username]);
         return count($query->fetchAll()) > 0;
     }
@@ -143,7 +208,7 @@ class AbstractController{
      */
     protected function emailAlreadyExists(string $email): bool
     {
-        $query = $this->doSql("SELECT email FROM users WHERE email = :email LIMIT 1");
+        $query = $this->doSql("SELECT id FROM users WHERE email = :email LIMIT 1");
         $query->execute([':email' => $email]);
         return count($query->fetchAll()) > 0;
     }

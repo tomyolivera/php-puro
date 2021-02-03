@@ -93,7 +93,24 @@ class Main{
             let message = JSON.parse(res);
             this.showMessage(message);
             message[1] == "Success" ? $("#btn_register").attr({disabled: true}).addClass("disabled") : '';
+            message[1] == "Success" ? this.redirectToRoute("login", 2) : '';
             
+        });
+    }
+
+    login(URL)
+    {
+        const data = {
+            username: $("#username").val(),
+            password: $("#password").val(),
+        }
+
+        $.post(URL, data, (res) => {
+            console.log(res);
+            let message = JSON.parse(res);
+            this.showMessage(message);
+            message[1] == "Success" ? $("#btn_login").attr({disabled: true}).addClass("disabled") : '';
+            message[1] == "Success" ? this.redirectToRoute("home", 2) : '';
         });
     }
 
@@ -101,9 +118,9 @@ class Main{
     {
         if(wait !== 0){
             setTimeout(() => {
-                window.location = "../" + location + ".php";
-            }, wait);
-        }else window.location = "../" + location + ".php";
+                window.location = "../" + location;
+            }, wait * 1000);
+        }else window.location = "../" + location;
     }
 
 

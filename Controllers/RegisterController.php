@@ -1,10 +1,9 @@
 <?php
 
 require_once 'AbstractController.php';
+session_start();
 
 class RegisterController extends AbstractController{
-    private const EMPTY_FIELDS = "Please, complete the fields!";
-    
     private const EMAIL_ALREADY_USED = "This email is already in use";
     private const EMAIL_IS_NOT_VALID = "The field email is not valid";
     
@@ -22,7 +21,6 @@ class RegisterController extends AbstractController{
 
     private const REGISTER_ERROR = "Error while trying to register, please try again later";
     private const REGISTER_SUCCESS = "The register was successfully";
-
     
     public function __construct(
         private string $email,
@@ -30,13 +28,6 @@ class RegisterController extends AbstractController{
         private string $name,
         private string $password,
         private string $repassword,
-
-        private string $role = "USER",
-        private string $photo = "",
-        private int $status = 0,
-        private bool $verified = false,
-        private int $login_attempts = 0,
-        private string $api_token = "",
     ){}
 
     /**
@@ -84,19 +75,13 @@ class RegisterController extends AbstractController{
             $check = $this->checkFields();
             if($check !== true) return $check;
 
-            $query = $this->doSql("INSERT INTO users(email, username, name, password, role, photo, status, verified, login_attempts, api_token)
-                                                VALUES(:email, :username, :name, :password, :role, :photo, :status, :verified, :login_attempts, :api_token)");
+            $query = $this->doSql("INSERT INTO users(email, username, name, password)
+                                                VALUES(:email, :username, :name, :password)");
             $query->execute([
                 ":email" => $this->email,
                 ":username" => $this->username,
                 ":name" => $this->name,
                 ":password" => $this->password,
-                ":role" => $this->role,
-                ":photo" => $this->photo,
-                ":status" => $this->status,
-                ":verified" => $this->verified,
-                ":login_attempts" => $this->login_attempts,
-                ":api_token" => $this->api_token,
             ]);
             return $this->successMsg(self::REGISTER_SUCCESS);
         } catch (PDOException $e) {
