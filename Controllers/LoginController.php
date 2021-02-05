@@ -1,19 +1,17 @@
 <?php
 
 require_once 'AbstractController.php';
-require_once '../Models/User.php';
 
-class LoginController extends User{
+class LoginController extends AbstractController{
     private const LOGIN_ERROR = "Error while trying to login";
     private const LOGIN_SUCCESS = "The login was successfully";
 
-    private const USER_NOT_EXISTS = "The username or the password are incorrect";
+    private const USER_NOT_EXISTS = "The email or the password are incorrect";
 
     public function __construct(
-        private string $username,
+        private string $email,
         private string $password
-    )
-    {}
+    ){}
 
     /**
      * @param null
@@ -21,12 +19,12 @@ class LoginController extends User{
      */
     private function checkFields(): bool|string
     {
-        if(empty($this->username) || empty($this->password)) return $this->errorMsg(self::EMPTY_FIELDS);
+        if(empty($this->email) || empty($this->password)) return $this->errorMsg(self::EMPTY_FIELDS);
 
-        $this->username = str_replace(" ", "", $this->username);
+        $this->email = str_replace(" ", "", $this->email);
 
-        $query = $this->doSql("SELECT username, password FROM users WHERE username = :username");
-        $query->execute([":username" => $this->username]);
+        $query = $this->doSql("SELECT email, password FROM users WHERE email = :email");
+        $query->execute([":email" => $this->email]);
         $result = $query->fetchAll();
 
         if(count($result) <= 0 || !password_verify($this->password, $result[0]['password'])) return $this->errorMsg(self::USER_NOT_EXISTS);
@@ -44,8 +42,8 @@ class LoginController extends User{
             $check = $this->checkFields();
             if($check !== true) return $check;
 
-            $query = $this->doSql("SELECT * FROM users WHERE username = :username");
-            $query->execute([":username" => $this->username]);
+            $query = $this->doSql("SELECT * FROM users WHERE email = :email");
+            $query->execute([":email" => $this->email]);
             $result = $query->fetchAll(PDO::FETCH_ASSOC);
 
             $_SESSION['user'] = $result;
@@ -59,8 +57,8 @@ class LoginController extends User{
     }
 }
 
-if(isset($_POST['username']))
+if(isset($_POST['email']))
 {
-    $login = new LoginController($_POST['username'], $_POST['password']);
+    $login = new LoginController($_POST['email'], $_POST['password']);
     echo $login->login();
 }

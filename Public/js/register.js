@@ -25,5 +25,5 @@ $(document).ready(() => {
     });
 
     // Register
-    $("#btn_register").click(() => { main.register(URL) });
+    $("#form_register").submit((e) => { e.preventDefault(); main.register(URL) });
 });

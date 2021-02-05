@@ -8,6 +8,8 @@ class AbstractController{
 
     // *Const*
     // User
+    protected const EMAIL_ALREADY_USED = "This email is already in use";
+    
     public const MIN_USERNAME = 6;
     public const MAX_USERNAME = 35;
     
@@ -52,6 +54,7 @@ class AbstractController{
      */
     public function redirectToRoute(string $route, int $wait = 0): void
     {
+        echo headers_sent() === true ? "<script>window.location = '../$route'</script>" : ''; 
         $wait === 0 ? header("Location: views/$route") : header("refresh:$wait;URL=views/$route");
     }
 
@@ -62,7 +65,7 @@ class AbstractController{
      */
     public function checkSession(): bool
     {
-        return isset($_SESSION['user']);
+        return isset($_SESSION['user']) || isset($_SESSION['access_token']);
     }
 
     /**
@@ -89,44 +92,9 @@ class AbstractController{
     }
 
     /**
-     * @param null
-     * @return string
-     */
-    public function showStatus(): string
-    {
-        switch ($this->getUser("status")) {
-            case 0:
-                $status = "<p class='flex align-center my-2'><i class='text-gray-500'>fiber_manual_record</i>Offline</p>";
-                break;
-                
-            case 1:
-                $status = "<p class='flex align-center my-2'><i class='text-green-500'>fiber_manual_record</i>Online</p>";
-                break;
-            default:
-                $status = "<p class='flex align-center my-2'><i class='text-orange-500'>fiber_manual_record</i>Busy</p>";
-                break;
-        }
-        return $status;
-    }
-
-    /**
-     * @param null
-     * @return string
-     */
-    public function showUserPhoto(): string
-    {
-        if($this->getUser("photo") == ""){
-            return '<img class="rounded-full w-16 h-16" src=".././../Public/img/users/nopicture.png">';
-        }else{
-            return '<img class="rounded-full w-16 h-16" src=".././../Public/img/users/nopicture.png">';
-        }
-    }
-
-    /**
      * @param string $sql
-     * @return PDOStatement|bool
      */
-    protected function doSql(string $sql): PDOStatement|bool
+    protected function doSql(string $sql)
     {
         require_once 'DB.php';
         $db = new DB();
@@ -191,6 +159,7 @@ class AbstractController{
         return password_hash($password, PASSWORD_BCRYPT);
     }
 
+    // Check if fields already exist
     /**
      * @param string $username
      * @return bool
@@ -240,5 +209,106 @@ class AbstractController{
     protected function errorServerMsg(string $msg, PDOException $e): string
     {
         return json_encode([$msg . ": " . $e->getMessage(), "Error"]);
+    }
+
+    /**********************************************************************/
+
+    // User Model
+    protected function setEmail(string $email)
+    {
+        $query = $this->doSql("UPDATE users SET email = :email WHERE id = :id");
+        $query->execute([":email" => $email, ":id" => $this->getUser("id")]);
+        $_SESSION['user'][0]['email'] = $email;
+    }
+    
+    protected function setUsername(string $username)
+    {
+        $query = $this->doSql("UPDATE users SET username = :username WHERE id = :id");
+        $query->execute([":username" => $username, ":id" => $this->getUser("id")]);
+        $_SESSION['user'][0]['username'] = $username;
+    }
+    
+    protected function setName(string $name)
+    {
+        $query = $this->doSql("UPDATE users SET name = :name WHERE id = :id");
+        $query->execute([":name" => $name, ":id" => $this->getUser("id")]);
+        $_SESSION['user'][0]['name'] = $name;
+    }
+    
+    protected function setBan(bool $ban)
+    {
+        $query = $this->doSql("UPDATE users SET ban = :ban WHERE id = :id");
+        $query->execute([":ban" => $ban, ":id" => $this->getUser("id")]);
+        $_SESSION['user'][0]['ban'] = $ban;
+    }
+    
+    protected function setDisabled(bool $disabled)
+    {
+        $query = $this->doSql("UPDATE users SET disabled = :disabled WHERE id = :id");
+        $query->execute([":disabled" => $disabled, ":id" => $this->getUser("id")]);
+        $_SESSION['user'][0]['disabled'] = $disabled;
+    }
+    
+    protected function setStatus(int $status)
+    {
+        $query = $this->doSql("UPDATE users SET status = :status WHERE id = :id");
+        $query->execute([":status" => $status, ":id" => $this->getUser("id")]);
+        $_SESSION['user'][0]['status'] = $status;
+    }
+    
+    protected function setVerified(bool $verified)
+    {
+        $query = $this->doSql("UPDATE users SET verified = :verified WHERE id = :id");
+        $query->execute([":verified" => $verified, ":id" => $this->getUser("id")]);
+        $_SESSION['user'][0]['verified'] = $verified;
+    }
+    
+    protected function setRole(string $role)
+    {
+        $query = $this->doSql("UPDATE users SET role = :role WHERE id = :id");
+        $query->execute([":role" => $role, ":id" => $this->getUser("id")]);
+        $_SESSION['user'][0]['role'] = $role;
+    }
+    
+    protected function setPhoto(string $photo)
+    {
+        $query = $this->doSql("UPDATE users SET photo = :photo WHERE id = :id");
+        $query->execute([":photo" => $photo, ":id" => $this->getUser("id")]);
+        $_SESSION['user'][0]['photo'] = $photo;
+    }
+
+    /**
+     * @param null
+     * @return string
+     */
+    public function showStatus(): string
+    {
+        switch ($this->getUser("status")) {
+            case 0:
+                $status = "<i class='text-gray-500'>fiber_manual_record</i>Offline";
+                break;
+                
+            case 1:
+                $status = "<i class='text-green-500'>fiber_manual_record</i>Online";
+                break;
+            default:
+                $status = "<i class='text-orange-500'>fiber_manual_record</i>Busy";
+                break;
+        }
+        
+        return $status;
+    }
+
+    /**
+     * @param null
+     * @return string
+     */
+    public function showUserPhoto(): string
+    {
+        if($this->getUser("photo") == ""){
+            return 'src=".././../Public/img/users/nopicture.png"';
+        }else{
+            return 'src="' . $this->getUser("photo") . '"';
+        }
     }
 }

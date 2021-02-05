@@ -6,7 +6,7 @@
         <div class="col col-md-6 flash_msg"></div>
     </div>
 
-    <form method="POST">
+    <form method="POST" id="form_register">
         <div class="form-group mb-3">
             <label for="email">Email</label>
             <input type="email" name="email" id="email" class="input-customize" placeholder="examplemail@mail.com">
@@ -37,7 +37,7 @@
         </div>
         
 
-        <button type="button" id="btn_register" class="button-<?php echo $AC->colors["register"] ?>-outline w-full my-3">Register</button>
+        <button type="submit" class="button-<?php echo $AC->colors["register"] ?>-outline w-full my-3">Register</button>
     </form>
 
     <p class="my-3 annotation">Do you already have an account? <a class="button-<?php echo $AC->colors["login"] ?>-outline" href="../login">Login here</a></p>

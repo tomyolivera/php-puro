@@ -55,10 +55,7 @@ class Main{
         
         let template = `
             <div role="alert">
-                <div class="bg-${color}-500 text-white font-bold rounded-t px-4 py-2">
-                    ${message[1]}
-                </div>
-                <div class="border border-t-0 border-${color}-400 rounded-b bg-${color}-100 px-4 py-3 text-${color}-700">
+                <div class="px-3 py-2 border border-t-0 bg-${color}-400 rounded bg-${color}-100 text-white">
                     <p>${message[0]}</p>
                 </div>
             </div>
@@ -93,7 +90,7 @@ class Main{
             let message = JSON.parse(res);
             this.showMessage(message);
             message[1] == "Success" ? $("#btn_register").attr({disabled: true}).addClass("disabled") : '';
-            message[1] == "Success" ? this.redirectToRoute("login", 2) : '';
+            message[1] == "Success" ? this.redirectToRoute("login", 1) : '';
             
         });
     }
@@ -110,7 +107,7 @@ class Main{
             let message = JSON.parse(res);
             this.showMessage(message);
             message[1] == "Success" ? $("#btn_login").attr({disabled: true}).addClass("disabled") : '';
-            message[1] == "Success" ? this.redirectToRoute("home", 2) : '';
+            message[1] == "Success" ? this.redirectToRoute("home", 1) : '';
         });
     }
 

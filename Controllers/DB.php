@@ -2,13 +2,17 @@
 
 class DB{
     private const CONNECTION_ERROR = "Error while trying to connect to DB: ";
+    private string $hostdb;
+    private string $userdb;
+    private string $passdb;
+    private string $dbname;
 
-    public function __construct(
-        private string $hostdb = "localhost",
-        private string $userdb = "root",
-        private string $passdb = "2709198712",
-        private string $dbname = "php_facer",
-    ){}
+    public function __construct(){
+        $this->hostdb = "localhost";
+        $this->userdb = "root";
+        $this->passdb = "2709198712";
+        $this->dbname = "php_facer";
+    }
 
     /**
      * @param null

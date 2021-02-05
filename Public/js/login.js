@@ -4,5 +4,5 @@ $(document).ready(() => {
     let main = new Main();
     
     // Login
-    $("#btn_login").click(() => { main.login(URL) });
+    $("#form_login").submit((e) => { e.preventDefault(); main.login(URL) });
 });

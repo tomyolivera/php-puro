@@ -1,10 +1,8 @@
 <?php
 
 require_once 'AbstractController.php';
-session_start();
 
 class RegisterController extends AbstractController{
-    private const EMAIL_ALREADY_USED = "This email is already in use";
     private const EMAIL_IS_NOT_VALID = "The field email is not valid";
     
     private const USERNAME_ALREADY_USED = "This username is already in use";

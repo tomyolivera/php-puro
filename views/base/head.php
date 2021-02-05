@@ -28,4 +28,4 @@
 
       <div class="w-100">
         <?php require_once 'header.php'; ?>
-            <div class="content mt-3">
+            <div class="content mt-3" style="overflow: auto;">

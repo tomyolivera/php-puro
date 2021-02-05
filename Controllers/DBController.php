@@ -27,9 +27,8 @@ class DBController extends AbstractController{
 
     /**
      * @param string $sql
-     * @return bool|string
      */
-    public function createTable(string $sql): bool|string
+    public function createTable(string $sql)
     {
         try {
             $query = $this->doSql($sql);
