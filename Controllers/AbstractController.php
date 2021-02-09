@@ -7,8 +7,12 @@ class AbstractController{
     public array $colors;
 
     // *Const*
+    // Global
+    protected const GLOBARL_ERROR = "There was an unexpected error";
+
     // User
     protected const EMAIL_ALREADY_USED = "This email is already in use";
+    protected const EMAIL_IS_NOT_VALID = "The field email is not valid";
     
     public const MIN_USERNAME = 6;
     public const MAX_USERNAME = 35;
@@ -18,6 +22,13 @@ class AbstractController{
     
     public const MIN_PASSWORD = 8;
     public const MAX_PASSWORD = 120;
+
+    // Tasks
+    public const MIN_TASK_NAME = 3;
+    public const MAX_TASK_NAME = 40;
+
+    public const MIN_TASK_DESCRIPTION = 0;
+    public const MAX_TASK_DESCRIPTION = 120;
 
     // Form
     protected const EMPTY_FIELDS = "Please, complete the fields!";
@@ -74,11 +85,16 @@ class AbstractController{
      */
     public function redirectIfSessionExists(): void
     {
+        $site = $this->getActualSite();
+
         if($this->checkSession()){
-            $site = $this->getActualSite();
             if($site == "login" || $site == "register"){
                 session_start();
                 $this->redirectToRoute("../../home");
+            }
+        }else{
+            if($site == "tasks" || $site == "friends" || $site == "chats" || $site == "profile" || $site == "admin"){
+                $this->redirectToRoute("../../login");
             }
         }
     }
@@ -104,22 +120,22 @@ class AbstractController{
     // Forms
     /**
      * @param string $field
-     * @param int $max
+     * @param int $min
      * @return bool
      */
-    protected function lessThan(string $field, int $max): bool
+    protected function lessThan(string $field, int $min): bool
     {
-        return strlen($field) < $max;
+        return strlen($field) < $min;
     }
 
     /**
      * @param string $field
-     * @param int $min
+     * @param int $max
      * @return bool
      */
-    protected function biggerThan(string $field, int $min): bool
+    protected function biggerThan(string $field, int $max): bool
     {
-        return strlen($field) > $min;
+        return strlen($field) > $max;
     }
 
     /**

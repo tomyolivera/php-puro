@@ -11,22 +11,9 @@ $(document).ready(() => {
 
         $.post(URL, data, (res) => {
             let result = JSON.parse(res);
-            console.log(result);
-            let status = "";
             let actions = "";
 
-            switch (result[0].status) {
-                case 0:
-                    status = "<p class='flex align-center'><i class='material-icons mr-2 text-gray-500'>fiber_manual_record</i>Offline</p>";
-                    break;
-                    
-                case 1:
-                    status = "<p class='flex align-center'><i class='material-icons mr-2 text-green-500'>fiber_manual_record</i>Online</p>";
-                    break;
-                default:
-                    status = "<p class='flex align-center'><i class='material-icons mr-2 text-orange-500'>fiber_manual_record</i>Busy</p>";
-                    break;
-            }
+            let status = main.showStatus(result[0].status);
             
             result.forEach(element => {
                 actions = `
@@ -40,11 +27,18 @@ $(document).ready(() => {
                 $("#sidebar_img").html(`<img class="rounded-full w-16 h-16" src="${element.photo}">`);
                 $("#profile_img").html(`<img class="w-100" src="${element.photo}">`);
 
-                $(".user_name").html(`${element.name}`);
-                $(".user_username").html(`${element.username}`);
-                $(".user_email").html(`${element.email}`);
-                $(".user_created_at").html(`${element.created_at}`);
+                $(".user_name").html(element.name);
+                $(".user_username").html(element.username);
+                $(".user_email").html(element.email);
+                $(".user_created_at").html(element.created_at);
                 $(".user_status").html(status);
+
+                // Birthday
+                element.birthday == null ? $("#birthday").val(main.getActualDate()) : $("#birthday").val(element.en_birthday);
+                $("#birthday_info").html(element.birthday != null ? element.birthday.substr(0, 5) : 'Add your birthday date');
+
+                // Back up email
+                $("#backup_email_info").html(element.backup_email != null ? element.backup_email : 'Add a backup email');
             });
         });
         
@@ -68,4 +62,35 @@ $(document).ready(() => {
         });
     });
 
+
+    /** EXTRAS **/
+    // Birthday
+    $("#birthday").val(main.getActualDate());
+
+    $("#form_birthday").submit((e) => {
+        e.preventDefault();
+
+        const data = { birthday: $("#birthday").val() }
+
+        $.post(URL, data, (res) => {
+            // let message = JSON.parse(res);
+            // main.showMessage(message);
+            main.closeModal("birthday_modal");
+            getData();
+        });
+    })
+
+    // Back up email
+    $("#form_backup_email").submit((e) => {
+        e.preventDefault();
+
+        const data = { backup_email: $("#backup_email").val() }
+
+        $.post(URL, data, (res) => {
+            let message = JSON.parse(res);
+            main.showMessage(message);
+            main.closeModal("backup_email_modal");
+            getData();
+        });
+    });
 });

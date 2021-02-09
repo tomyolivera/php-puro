@@ -3,8 +3,6 @@
 require_once 'AbstractController.php';
 
 class RegisterController extends AbstractController{
-    private const EMAIL_IS_NOT_VALID = "The field email is not valid";
-    
     private const USERNAME_ALREADY_USED = "This username is already in use";
     private const USERNAME_IS_NOT_VALID = "The field username must only contains LETTERS, NUMBERS and '_'";
     private const LESS_USERNAME = "The field username must be less than " . self::MAX_USERNAME . " characters" ;
@@ -73,8 +71,8 @@ class RegisterController extends AbstractController{
             $check = $this->checkFields();
             if($check !== true) return $check;
 
-            $query = $this->doSql("INSERT INTO users(email, username, name, password)
-                                                VALUES(:email, :username, :name, :password)");
+            $query = $this->doSql("INSERT INTO users(email, username, name, password, photo)
+                                                VALUES(:email, :username, :name, :password, DEFAULT)");
             $query->execute([
                 ":email" => $this->email,
                 ":username" => $this->username,

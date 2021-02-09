@@ -9,7 +9,7 @@
     <form method="POST" id="form_register">
         <div class="form-group mb-3">
             <label for="email">Email</label>
-            <input type="email" name="email" id="email" class="input-customize" placeholder="examplemail@mail.com">
+            <input type="email" name="email" id="email" class="input-customize" placeholder="examplemail@mail.com" pattern="[a-zA-Z0-9@.$]+">
         </div>
 
         <div class="form-group mb-3">

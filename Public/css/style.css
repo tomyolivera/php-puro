@@ -1,3 +1,7 @@
+*{
+    user-select: none;
+}
+
 .allPage{
     position:fixed;
     width:100%;

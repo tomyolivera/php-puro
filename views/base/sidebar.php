@@ -35,7 +35,7 @@
             <a href="../chats" class="<?php echo $class; ?>"><i>chat</i> Chats</a>
             
             <?php if($AC->checkSession()): ?>
-                <a href="#" class="<?php echo $class; ?>"><i>group</i> Friends</a>
+                <a href="../friends" class="<?php echo $class; ?>"><i>group</i> Friends</a>
                 <a href="../profile" class="<?php echo $class; ?>"><i>person</i> Profile</a>
                 <a href="../login/logout.php" class="d-block p-3 d-flex align-center text-red-600" onclick="return confirm('Do you really want to logout?')"><i>logout</i> Logout</a>
             <?php else:; endif; ?>

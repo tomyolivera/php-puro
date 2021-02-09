@@ -20,9 +20,9 @@
                 $data = $google_service->userinfo->get();
                 
                 if(!$this->emailAlreadyExists($data['email'])){
-                    $query = $this->doSql("INSERT INTO users(name, email, photo)
-                                             VALUES(:name, :email, :photo)");
-                    $query->execute([":name" => $data['name'], ':email' => $data['email'], ':photo' => $data['picture']]);
+                    $query = $this->doSql("INSERT INTO users(name, email)
+                                             VALUES(:name, :email)");
+                    $query->execute([":name" => $data['name'], ':email' => $data['email']]);
                 }
 
                 $query = $this->doSql("SELECT * FROM users WHERE email = :email");

@@ -1,20 +1,72 @@
+### USERS
 CREATE TABLE users(
-    id int(11) NOT NULL AUTO_INCREMENT,
-    email varchar(120) NOT NULL,
-    username varchar(40),
-    name varchar(50) NOT NULL,
-    role varchar(15) NOT NULL DEFAULT "USER",
+    id INT(11) NOT NULL AUTO_INCREMENT,
+    email VARCHAR(120) NOT NULL,
+    backup_email VARCHAR(120) NOT NULL,
+    username VARCHAR(40),
+    name VARCHAR(50) NOT NULL,
+    role VARCHAR(15) NOT NULL DEFAULT "USER",
     ban BOOLEAN NOT NULL,
     disabled BOOLEAN NOT NULL,
-    status tinyint(1) NOT NULL,
+    status TINYINT(1) NOT NULL,
     verified boolean NOT NULL,
-    login_attempts tinyint(1) NOT NULL,
+    login_attempts TINYINT(1) NOT NULL,
     created DATE NOT NULL DEFAULT CURDATE(),
-    photo varchar(500),
-    api_token varchar(25),
-    password varchar(80),
+    photo VARCHAR(500),
+    password VARCHAR(80),
+    recover_password_key VARCHAR(30),
+    birthday DATE,
+    max_tasks int(5) NOT NULL DEFAULT 25,
 
     CONSTRAINT pk_users PRIMARY KEY(id),
     CONSTRAINT uq_email UNIQUE(email),
+    CONSTRAINT uq_backup_email UNIQUE(backup_email),
     CONSTRAINT uq_username UNIQUE(username)
 )ENGINE=INNODB;
+
+DROP VIEW get_user_data;
+CREATE VIEW get_user_data AS
+    SELECT id, email, IFNULL(backup_email, 'You do not have a backup email') AS backup_email, IFNULL(username, 'You do not have a username') AS username, name,
+            disabled, status, verified, DATE_FORMAT(created, '%d-%m-%Y') AS created_at, photo, DATE_FORMAT(birthday, '%d-%m-%Y') AS birthday, birthday AS en_birthday, max_tasks 
+    FROM users
+
+### TASKS
+CREATE TABLE tasks(
+	id INT(11) NOT NULL AUTO_INCREMENT,
+    name VARCHAR(40) NOT NULL,
+    description VARCHAR(120),
+    end_task DATE,
+    user_id INT(11),
+    
+    CONSTRAINT pk_tasks PRIMARY KEY(id),
+    CONSTRAINT fk_user_id FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE
+)ENGINE=INNODB;
+
+
+### FRIENDS
+CREATE TABLE friends(
+	id INT(11) NOT NULL AUTO_INCREMENT,
+    receive_id INT(11) NOT NULL,
+    send_id INT(11) NOT NULL,
+	created DATE NOT NULL DEFAULT CURDATE(),
+	accepted BOOLEAN NOT NULL,
+	accepted_at DATE,
+    
+    CONSTRAINT pk_friends PRIMARY KEY(id),
+    CONSTRAINT fk_receive_id FOREIGN KEY(receive_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_send_id FOREIGN KEY(send_id) REFERENCES users(id) ON DELETE CASCADE
+)ENGINE=INNODB;
+
+DROP VIEW get_user_fr_requests;
+CREATE VIEW get_user_fr_requests AS
+    SELECT r.id AS my_id, s.id AS receive_id, s.name, s.status, s.photo, s.verified, DATEDIFF(CURDATE(), f.created) AS received_at
+    FROM friends f
+    JOIN users r ON r.id = f.receive_id
+    JOIN users s ON s.id = f.send_id
+    WHERE accepted = 0
+    ORDER BY f.created DESC
+
+DROP VIEW get_admin;
+CREATE VIEW get_admin AS
+    SELECT id, photo, name, username, email, status, role, verified, ban, disabled, DATE_FORMAT(created, '%d-%m-%Y') AS created
+    FROM users

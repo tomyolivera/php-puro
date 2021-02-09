@@ -35,6 +35,30 @@ $(".button-red-outline").addClass("btn btn-outline-danger");
 $(".button-yellow-outline").addClass("btn btn-outline-warning");
 $(".button-dark-outline").addClass("btn btn-outline-dark");
 
+function showMessage(message)
+{
+    let color = message[1] == "Success" ? "success" : "danger";
+    
+    let template = `
+        <div role="alert">
+            <div class="px-3 py-2 bg-${color}-700 rounded bg-${color}-100 text-white shadow-lg">
+                <p class="text-center">${message[0]}</p>
+            </div>
+        </div>
+    `
+
+    template = `
+        <div class="alert alert-${color} alert-dismissible fade show" role="alert">
+            <p class="text-center">${message[0]}</p>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    `
+
+    $(".flash_msg").html(template);
+    
+    setTimeout(() => { $(".flash_msg").html("") }, 5000);
+}
+
 class Main{
     showPassword(password)
     {
@@ -46,24 +70,63 @@ class Main{
 
     createSafePassword()
     {
-        
+        // ...
     }
 
     showMessage(message)
     {
-        let color = message[1] == "Success" ? "green" : "red";
+        let color = message[1] == "Success" ? "success" : "danger";
         
         let template = `
             <div role="alert">
-                <div class="px-3 py-2 border border-t-0 bg-${color}-400 rounded bg-${color}-100 text-white">
-                    <p>${message[0]}</p>
+                <div class="px-3 py-2 bg-${color}-700 rounded bg-${color}-100 text-white shadow-lg">
+                    <p class="text-center">${message[0]}</p>
                 </div>
+            </div>
+        `
+
+        template = `
+            <div class="alert alert-${color} alert-dismissible fade show" role="alert">
+                <p class="text-center">${message[0]}</p>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         `
 
         $(".flash_msg").html(template);
         
         setTimeout(() => { $(".flash_msg").html("") }, 10000);
+    }
+
+    showStatus(status)
+    {
+        switch (status) {
+            case 0:
+                status = "<p class='flex align-center'><i class='material-icons mr-2 text-gray-500'>fiber_manual_record</i>Offline</p>";
+                break;
+                
+            case 1:
+                status = "<p class='flex align-center'><i class='material-icons mr-2 text-green-500'>fiber_manual_record</i>Online</p>";
+                break;
+
+            default:
+                status = "<p class='flex align-center'><i class='material-icons mr-2 text-orange-500'>fiber_manual_record</i>Busy</p>";
+                break;
+        }
+
+        return status;
+    }
+                    
+    getActualDate()
+    {
+        let date = new Date();
+        let day = date.getDate();
+        let month = date.getMonth() + 1;
+        let year = date.getFullYear();
+
+        day = day < 10 ? '0' + day : day;
+        month = month < 10 ? '0' + month : month;
+
+        return year + "-" + month + "-" + day;
     }
 
     showActualLength(field, max_lengths)
@@ -98,7 +161,7 @@ class Main{
     login(URL)
     {
         const data = {
-            username: $("#username").val(),
+            email: $("#email").val(),
             password: $("#password").val(),
         }
 
@@ -117,8 +180,16 @@ class Main{
             setTimeout(() => {
                 window.location = "../" + location;
             }, wait * 1000);
-        }else window.location = "../" + location;
+        }else{
+            window.location = "../" + location;
+        }
     }
-
+   
+    closeModal(modal)
+    {
+        $("#" + modal).modal('hide');
+        $('body').removeClass('modal-open');
+        $('.modal-backdrop').remove();
+    }
 
 }
