@@ -45,7 +45,7 @@ function getTasks()
                     <tr>
                         <td>${element.name}</td>
                         <td>
-                            <textarea disabled class="bg-transparent" style="min-width:200px;max-width:200px;min-height:120px;max-height:120px;">${element.description}</textarea>
+                            <textarea disabled class="bg-transparent" style="min-width:200px;max-width:500px;min-height:80px;max-height:130px;">${element.description}</textarea>
                         </td>
                         <td>${element.end_task}</td>
                         <td>

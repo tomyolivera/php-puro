@@ -18,7 +18,7 @@
     </div>
 
     <!-- Tasks -->
-    <table class="my-3 table table-dark table-striped table-bordered table-lg">
+    <table class="my-3 table table-dark table-striped table-bordered table-lg table-responsive">
         <thead>
             <tr>
                 <th>Name</th>
