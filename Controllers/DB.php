@@ -10,7 +10,7 @@ class DB{
     public function __construct(){
         $this->hostdb = "localhost";
         $this->userdb = "root";
-        $this->passdb = "2709198712";
+        
         $this->dbname = "php_facer";
     }
 
